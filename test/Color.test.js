@@ -1,6 +1,8 @@
 // chain for assertions
 // mocha to organizes tests
 
+const { AssertionError } = require('chai')
+
 const Color = artifacts.require('./Color.sol')
 
 require('chai')
@@ -8,9 +10,28 @@ require('chai')
   .should()
 
   contract('Color', (accounts ) => {
+    let contract
+
+    before(async () => {
+      contract = await Color.deployed()
+    })
+
     describe('deployment', async() => {
       it('desploys successfully', async () => {
-
+        const address = contract.address
+        assert.notEqual(address, 0x0)
+        assert.notEqual(address, ' ')
+        assert.notEqual(address, null)
+        assert.notEqual(address, undefined)
       })
+      it('has a name', async () => {
+        const name = await contract.name()
+        assert.equal(name, 'Color')
+      })
+      it('has a symbol', async () => {
+        const symbol = await contract.symbol()
+        assert.equal(symbol, 'COLOR')
+      })
+
     } )
   })
