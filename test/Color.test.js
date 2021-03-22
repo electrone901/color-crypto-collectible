@@ -32,6 +32,15 @@ require('chai')
         const symbol = await contract.symbol()
         assert.equal(symbol, 'COLOR')
       })
-
     } )
+    describe('minting', async () => {
+      it('creates a new token', async () => {
+        const result = await contract.mint('#EC058E')
+        const totalSupply = await contract.totalSupply()
+        // SUCCESS
+        assert.equal(totalSupply, 1)
+      })
+    })
+
+
   })
