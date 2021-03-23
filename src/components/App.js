@@ -16,6 +16,16 @@ class App extends Component {
     }
   }
 
+  mint = (color) => {
+    // get smart contract and call mint
+    this.state.contract.methods.mint(color).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+        this.setState({
+          colors: [...this.state.colors, color]
+        })
+      })
+  }
+
 
   async componentWillMount() {
     await this.loadWeb3()
@@ -95,7 +105,26 @@ class App extends Component {
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
               <div className="content mr-auto ml-auto">
-                {/* Form goes here  */}
+                <h1 className="form">Issue Token</h1>
+
+                <form onSubmit={(event) => {
+                  event.preventDefault()
+                  const color = this.color.value
+                  this.mint(color)
+                }}>
+                  <input
+                    type="text"
+                    className="form-control mb-1"
+                    placeholder="e.g #FFFFFF"
+                    ref={(input) => { this.color = input }}
+                  />
+                  <input
+                    type="submit"
+                    className="btn btn-block btn-primary"
+                    value="Mint"
+                  />
+                </form>
+
                 {/* Creates a new contract instance with all its methods and events defined in its json interface object. */}
 
 
