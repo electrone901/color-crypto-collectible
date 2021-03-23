@@ -10,6 +10,9 @@ class App extends Component {
     super(props)
     this.state = {
       account: '',
+      contract: null,
+      totalSupply: 0,
+      colors: []
     }
   }
 
@@ -42,11 +45,29 @@ class App extends Component {
     // gets abi from smart contract
     const networkId = await web3.eth.net.getId()
     const networkData = Color.networks[networkId]
-    const abi = Color.abi
-    const address = networkData.address
-    const myContract = new web3.eth.Contract(abi, address)
-    console.log("🚀  myContract", myContract)
 
+    if (networkData) {
+      const abi = Color.abi
+      const address = networkData.address
+      const contract = new web3.eth.Contract(abi, address)
+      this.setState({ contract })
+      // call is for reading data dfrom contract
+      const totalSupply = await contract.methods.totalSupply().call()
+      this.setState({ totalSupply })
+
+      // send  is to put new things in the blockchain
+      // Loads color
+      for (let i = 1; i <= totalSupply; i++) {
+        const color = await contract.methods.colors(i - 1).call()
+        this.setState({
+          colors: [...this.state.colors, color]
+        })
+      }
+      console.log("state(((", this.state)
+    }
+    else {
+      window.alert('Smart contract not deployed to fetected network.')
+    }
   }
 
   render() {
@@ -84,7 +105,13 @@ class App extends Component {
           </div>
           <hr />
           <div className="row text-center">
-            <p>Tokens here</p>
+            {this.state.colors.map((color, key) => {
+              return <div key={key} className="col-md-3 mb-3">
+                <div className="token" style={{ backgroundColor: color }}></div>
+                <div className="p">{color}</div>
+              </div>
+
+            })}
           </div>
         </div>
       </div>
