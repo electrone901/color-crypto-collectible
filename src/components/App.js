@@ -1,8 +1,45 @@
 import React, { Component } from 'react';
+import Web3 from 'web3'
 import logo from '../logo.png';
 import './App.css';
 
+
 class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      account: '',
+    }
+  }
+
+
+  async componentWillMount() {
+    await this.loadWeb3()
+    await this.loadBlockchainData()
+  }
+
+  // connecting to web3
+  async loadWeb3() {
+    if (window.etherum) {
+      window.web3 = new Web3(window.etherum)
+      await window.etherum.enable()
+    }
+    else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    }
+    else {
+      window.alert('Non-Etherum browser detected. You should consider trying Metamask!')
+    }
+  }
+
+  // Loads accounts
+  async loadBlockchainData() {
+    const web3 = window.web3
+    const accounts = await web3.eth.getAccounts()
+    console.log("🚀 ~ file: App.js ~ line 39 ~ App ~ loadBlockchainData ~ accounts", accounts)
+    this.setState({ account: accounts[0] })
+  }
+
   render() {
     return (
       <div>
@@ -13,8 +50,15 @@ class App extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Dapp University
+            Color Tokens
           </a>
+          <ul className="navbar-nav px-3">
+            <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
+              <small className="text-white">
+                <span id="account">Account: {this.state.account}</span>
+              </small>
+            </li>
+          </ul>
         </nav>
         <div className="container-fluid mt-5">
           <div className="row">
